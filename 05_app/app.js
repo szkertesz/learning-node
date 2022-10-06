@@ -1,3 +1,4 @@
+const socket = io()
 const addMessages = message => {
     const msgContainer = document.getElementById('messages')
     msgContainer.insertAdjacentHTML("beforeend", `
