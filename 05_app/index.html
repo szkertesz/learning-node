@@ -18,7 +18,8 @@
         <div class="jumbotron p-5 mt-4 mb-4 bg-light rounded-3">
             <div class="container-fluid py-5">
                 <h1 class="display-4 mb-4">Send message</h1>
-                <input type="text" class="form-control mb-4" placeholder="name" />
+                <input id="name-input" type="text" class="form-control mb-4" placeholder="name" />
+                <textarea id="message-input" class="form-control mb-4" placeholder="message"></textarea>
                 <button class="btn btn-success" data-send="">send</button>
             </div>
         </div>
@@ -26,36 +27,7 @@
 
         </div>
     </div>
-    <script>
-        const addMessages = message => {
-            const msgContainer = document.getElementById('messages')
-            msgContainer.insertAdjacentHTML("beforeend", `
-                <h3>${message.name}</h3>
-                <p>${message.message}</p>
-            `)
-        }
-        const sendButton = document.querySelector('[data-send]')
-        sendButton.addEventListener('click', () => {
-            addMessages({ name: 'Message title', message: 'Message body' })
-        })
-
-        const requestMessages = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/messages')
-                const data = response.json()
-                return data
-            } catch (error) {
-                console.log('Fetch error: ', error)
-            }
-        }
-
-        (async () => {
-            const messages = await requestMessages()
-            messages.forEach(message => {
-                addMessages(message)
-            });
-        })()
-    </script>
+    <script src="app.js"></script>
 </body>
 
 </html>
