@@ -33,43 +33,65 @@ app.get('/messages', (req, res) => {
     })
 })
 
-app.post('/messages', (req, res) => {
-    var message = new Message(req.body)
-    // callback based solution:
-    // message.save(err => {
-    //     if (err) sendStatus(500)
+// app.post('/messages', (req, res) => {
+//     var message = new Message(req.body)
+//     // callback based solution:
+//     // message.save(err => {
+//     //     if (err) sendStatus(500)
 
-    //     Message.findOne({ message: 'badword' }, (err, censored) => {
-    //         if (censored) {
-    //             console.log('censorable term found: ', censored)
-    //             Message.deleteOne({ _id: censored.id }, err => {
-    //                 console.log('Censored item removed')
-    //             })
-    //         }
+//     //     Message.findOne({ message: 'badword' }, (err, censored) => {
+//     //         if (censored) {
+//     //             console.log('censorable term found: ', censored)
+//     //             Message.deleteOne({ _id: censored.id }, err => {
+//     //                 console.log('Censored item removed')
+//     //             })
+//     //         }
 
-    //     })
-    //     // messages.push(req.body)
-    //     io.emit('message', req.body)
-    //     res.sendStatus(200)
-    // })
+//     //     })
+//     //     // messages.push(req.body)
+//     //     io.emit('message', req.body)
+//     //     res.sendStatus(200)
+//     // })
 
-    // promise based solution:
-    message.save().then(() => {
+//     // promise based solution:
+//     message.save().then(() => {
+//         console.log('Saved')
+//         return Message.findOne({ message: 'badword' })
+//     })
+//         .then(censored => {
+//             if (censored) {
+//                 console.log('censorable term found: ', censored)
+//                 return Message.deleteOne({ _id: censored.id })
+//             }
+//             io.emit('message', req.body)
+//             res.sendStatus(200)
+//         })
+//         .catch(err => {
+//             res.sendStatus(500)
+//             return console.error(err)
+//         })
+
+// })
+
+// async await solution
+app.post('/messages', async (req, res) => {
+    try {
+        var message = new Message(req.body)
+        var savedMessage = await message.save()
         console.log('Saved')
-        return Message.findOne({ message: 'badword' })
-    })
-        .then(censored => {
-            if (censored) {
-                console.log('censorable term found: ', censored)
-                return Message.deleteOne({ _id: censored.id })
-            }
+        var censored = await Message.findOne({ message: 'badword' })
+        if (censored) {
+            await Message.deleteOne({ _id: censored.id })
+        } else {
             io.emit('message', req.body)
-            res.sendStatus(200)
-        })
-        .catch(err => {
-            res.sendStatus(500)
-            return console.error(err)
-        })
+        }
+        res.sendStatus(200)
+    } catch (error) {
+        res.sendStatus(500)
+        return console.error(error)
+    } finally {
+        console.log('message post called')
+    }
 })
 
 io.on('connection', socket => {
