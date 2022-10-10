@@ -1,5 +1,5 @@
 const socket = io()
-const addMessages = message => {
+const addMessage = message => {
     const msgContainer = document.getElementById('messages')
     msgContainer.insertAdjacentHTML("beforeend", `
                 <h3>${message.name}</h3>
@@ -40,6 +40,8 @@ const postMessage = async (url, message) => {
 (async () => {
     const messages = await getMessages()
     messages.forEach(message => {
-        addMessages(message)
+        addMessage(message)
     });
 })()
+
+socket.on('message', addMessage)
